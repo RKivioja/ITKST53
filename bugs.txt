@@ -3,15 +3,35 @@
 # desc
 #
 
-[zookd.c:1612]
-description goes here. for example, the 'buf' variable can be
-overwritten by the 'msg' variable because ...
+[http.c:76]
+strchr() is not an overflow protected method, so handling long HTTP requests
+crashes the application and is a potential vulnerability. A canary word could
+propably be used to prevent this.
 
-    <paste offending line(s) of code here>
+    sp1 = strchr(buf, ' ');
 
-[http.c:1512]
-another description.
+[http.c:98]
+apparently this is the part where the program handles query strings. It uses
+sprintf() to do it and that is not overflow protected, so one of the
+vulnerabilities is propably here. A canary word could propably be used to
+prevent this.
 
-    <paste offending line(s) of code here>
+    if ((qp = strchr(sp1, '?')))
+    {
+        *qp = '\0';
+        envp += sprintf(envp, "QUERY_STRING=%s", qp + 1) + 1;
+    }
 
-# many more come here
+[http.c:282]
+this is very likely one of the vulnerabilities. strcat() is not overflow protected and user is allowed to freely input the name variable. A canary would prevent
+this.
+
+    strcat(pn, name);
+
+[http.c:179]
+the error page has no buffer overflow protection in its print-functions. Can be reproduced by just entering a long string after base address. Canary could prevent abusing this.
+
+    fdprint(fd, "HTTP/1.0 %d Error\r\n, code);
+
+
+Kaatuu myös kun laittaa summan ja liian ison nimen siirtoon...
