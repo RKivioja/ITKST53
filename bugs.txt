@@ -32,6 +32,6 @@ this.
 the error page has no buffer overflow protection in its print-functions. Can be reproduced by just entering a long string after base address. Canary could prevent abusing this.
 
     fdprint(fd, "HTTP/1.0 %d Error\r\n, code);
-
+Ongelma on itse asiassa fdprintin sisalla olevassa vasprintf-funktiossa...
 
 Kaatuu myös kun laittaa summan ja liian ison nimen siirtoon...
